@@ -1,5 +1,6 @@
 // See LICENSE for license details.
 
+#include "crc.h"
 #include "processor.h"
 #include "mmu.h"
 #include "disasm.h"
@@ -177,6 +178,7 @@ static inline reg_t execute_insn(processor_t* p, reg_t pc, insn_fetch_t fetch)
   reg_t npc;
 
   try {
+    
     npc = fetch.func(p, fetch.insn, pc);
     if (npc != PC_SERIALIZE_BEFORE) {
 
@@ -207,6 +209,14 @@ static inline reg_t execute_insn(processor_t* p, reg_t pc, insn_fetch_t fetch)
 #endif
   } catch(...) {
     throw;
+  }
+  if ((fetch.insn.bits() & MASK_CTRLSIG_S) == MATCH_CTRLSIG_S
+      || (fetch.insn.bits() & MASK_CTRLSIG_M) == MATCH_CTRLSIG_M) {
+    p->get_state()->crcreg = crc_init();
+  } else {
+    uint32_t insn_32 = fetch.insn.bits() & 0xffffffff;
+    p->get_state()->crcreg = crc_update(
+        p->get_state()->crcreg, &insn_32, sizeof insn_32);
   }
   p->update_histogram(pc);
 

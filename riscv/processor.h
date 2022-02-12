@@ -7,6 +7,7 @@
 #include "trap.h"
 #include "abstract_device.h"
 #include <string>
+#include <stack>
 #include <vector>
 #include <unordered_map>
 #include <map>
@@ -165,6 +166,12 @@ struct state_t
   reg_t pc;
   regfile_t<reg_t, NXPR, true> XPR;
   regfile_t<freg_t, NFPR, false> FPR;
+
+  // CFCSS registers and stack
+  uint8_t cfcss_g;
+  uint8_t cfcss_d;
+  uint16_t crcreg;
+  std::stack<std::pair<uint8_t, uint8_t>> gdstack;
 
   // control and status registers
   std::unordered_map<reg_t, csr_t_p> csrmap;

@@ -143,6 +143,32 @@ struct : public arg_t {
 
 struct : public arg_t {
   std::string to_string(insn_t insn) const {
+    return std::to_string((int)insn.imm8_d());
+  }
+} imm8_d;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    return std::to_string((int)insn.imm8_s());
+  }
+} imm8_s;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    return std::to_string((int)insn.imm8_D());
+  }
+} imm8_D;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    std::stringstream s;
+    s << std::hex << "0x" << (int)insn.imm16_c();
+    return s.str();
+  }
+} imm16_c;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
     return xpr_name[insn.rvc_rs1()];
   }
 } rvc_rs1;
@@ -801,6 +827,11 @@ void disassembler_t::add_instructions(isa_parser_t* isa)
   add_insn(new disasm_insn_t("csrrwi", match_csrrwi, mask_csrrwi, {&xrd, &csr, &zimm5}));
   add_insn(new disasm_insn_t("csrrsi", match_csrrsi, mask_csrrsi, {&xrd, &csr, &zimm5}));
   add_insn(new disasm_insn_t("csrrci", match_csrrci, mask_csrrci, {&xrd, &csr, &zimm5}));
+  add_insn(new disasm_insn_t("ctrlsig_s", match_ctrlsig_s, mask_ctrlsig_s, {&imm8_d, &imm8_s, &imm8_D}));
+  add_insn(new disasm_insn_t("ctrlsig_m", match_ctrlsig_m, mask_ctrlsig_m, {&imm8_d, &imm8_s, &imm8_D}));
+  add_insn(new disasm_insn_t("crcsig", match_crcsig, mask_crcsig, {&imm16_c}));
+  add_insn(new disasm_insn_t("pushsig", match_pushsig, mask_pushsig, {}));
+  add_insn(new disasm_insn_t("popsig", match_popsig, mask_popsig, {}));
 
   if (isa->extension_enabled('S')) {
     DEFINE_NOARG(sret);

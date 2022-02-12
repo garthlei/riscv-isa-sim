@@ -96,6 +96,11 @@ public:
   uint64_t bs  () {return x(30,2);} // Crypto ISE - SM4/AES32 byte select.
   uint64_t rcon() {return x(20,4);} // Crypto ISE - AES64 round const.
 
+  uint8_t imm8_d() { return x(24, 8); }
+  uint8_t imm8_s() { return x(16, 8); }
+  uint8_t imm8_D() { return x(8, 8); }
+  uint16_t imm16_c() { return x(16, 16); }
+
   int64_t rvc_imm() { return x(2, 5) + (xs(12, 1) << 5); }
   int64_t rvc_zimm() { return x(2, 5) + (x(12, 1) << 5); }
   int64_t rvc_addi4spn_imm() { return (x(6, 1) << 2) + (x(5, 1) << 3) + (x(11, 2) << 4) + (x(7, 4) << 6); }
@@ -183,6 +188,16 @@ private:
 #define RS2 READ_REG(insn.rs2())
 #define RS3 READ_REG(insn.rs3())
 #define WRITE_RD(value) WRITE_REG(insn.rd(), value)
+
+// CFC macros
+#define REG_G (STATE.cfcss_g)
+#define REG_D (STATE.cfcss_d)
+#define REG_CRC (STATE.crcreg)
+#define STACK_CFC (STATE.gdstack)
+#define DIFF (insn.imm8_d())
+#define SIG (insn.imm8_s())
+#define ADJ (insn.imm8_D())
+#define CRC (insn.imm16_c())
 
 #ifndef RISCV_ENABLE_COMMITLOG
 # define WRITE_REG(reg, value) ({ CHECK_REG(reg); STATE.XPR.write(reg, value); })
