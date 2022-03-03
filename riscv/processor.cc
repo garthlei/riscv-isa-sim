@@ -890,6 +890,8 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
     return;
   }
 
+  state.crc_valid = false;
+
   if (t.cause() == CAUSE_BREAKPOINT && (
               (state.prv == PRV_M && state.dcsr->ebreakm) ||
               (state.prv == PRV_S && state.dcsr->ebreaks) ||

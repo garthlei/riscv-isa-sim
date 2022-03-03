@@ -171,6 +171,7 @@ struct state_t
   uint8_t cfcss_g;
   uint8_t cfcss_d;
   uint16_t crcreg;
+  bool crc_valid;
   std::stack<std::pair<uint8_t, uint8_t>> gdstack;
 
   // control and status registers
