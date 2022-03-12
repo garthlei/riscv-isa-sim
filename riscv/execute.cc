@@ -176,6 +176,7 @@ static inline reg_t execute_insn(processor_t* p, reg_t pc, insn_fetch_t fetch)
   commit_log_reset(p);
   commit_log_stash_privilege(p);
   reg_t npc;
+  bool calc_crc = !p->get_state()->serialized;
 
   try {
     
@@ -210,7 +211,7 @@ static inline reg_t execute_insn(processor_t* p, reg_t pc, insn_fetch_t fetch)
   } catch(...) {
     throw;
   }
-  if (!p->get_state()->serialized) {
+  if (calc_crc) {
     if ((fetch.insn.bits() & MASK_CTRLSIG_S) == MATCH_CTRLSIG_S
         || (fetch.insn.bits() & MASK_CTRLSIG_M) == MATCH_CTRLSIG_M) {
       p->get_state()->crcreg = crc_init();
